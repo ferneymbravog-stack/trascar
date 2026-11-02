@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1038b8">
+<title>Trascar · Servicio de transporte y acarreos</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="nav">
+    <div class="logo">
+      <span class="logo-icon">🛻</span>
+      <div class="logo-text">TRASCAR<small>Transporte &amp; Acarreos</small></div>
+    </div>
+    <div id="quien" class="quien hide">
+      <span class="avatar" id="avatar"></span>
+      <span class="quien-info"><b id="quienNombre"></b><small id="quienRol"></small></span>
+      <button id="btnSalir" class="btn btn-ghost btn-sm" type="button">Salir</button>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor">
+
+  <section class="hero">
+    <div class="hero-txt">
+      <span class="hero-badge">Servicio de acarreos</span>
+      <h1>Agende su acarreo de forma <em>rápida y segura</em></h1>
+      <p>Trascar: Toyota Hilux 1994 para transporte de materiales, muebles y mercancía. Solicite su cita en línea y confirme su horario.</p>
+      <div class="chips">
+        <span class="chip">🕗 Lun–Dom, excepto 6–8am y 6–8pm</span>
+        <span class="chip">📅 Sábados alternados</span>
+        <span class="chip chip-noche">🌙 Nocturno (8pm–6am): valor adicional</span>
+        <span class="chip">✔ Confirmación del conductor</span>
+      </div>
+    </div>
+    <div class="hero-foto" id="heroFoto"></div>
+  </section>
+
+  <!-- ============ Acceso ============ -->
+  <section id="auth" class="grid-2">
+    <form id="formLogin" class="card" autocomplete="on">
+      <h3 class="card-titulo">Ingresar</h3>
+      <label for="lu">Usuario</label>
+      <input id="lu" placeholder="Su usuario" autocomplete="username">
+      <label for="lc">Clave</label>
+      <div class="pw">
+        <input id="lc" type="password" placeholder="Su clave" autocomplete="current-password">
+        <button type="button" class="eye" data-target="lc" title="Mostrar/ocultar clave">👁</button>
+      </div>
+      <button class="btn btn-primary" type="submit">Entrar</button>
+      <p id="lmsg" class="msg-linea"></p>
+    </form>
+
+    <form id="formRegistro" class="card" autocomplete="off">
+      <h3 class="card-titulo">¿Cliente nuevo? Regístrese</h3>
+      <div class="row">
+        <div><label for="rn">Nombre completo</label><input id="rn" placeholder="Nombre"></div>
+        <div><label for="rt">Teléfono</label><input id="rt" type="tel" placeholder="Teléfono"></div>
+      </div>
+      <label for="ru">Usuario</label>
+      <input id="ru" placeholder="Usuario">
+      <div class="row">
+        <div>
+          <label for="rc">Clave</label>
+          <div class="pw">
+            <input id="rc" type="password" placeholder="Mín. 6 caracteres">
+            <button type="button" class="eye" data-target="rc,rc2" title="Mostrar/ocultar claves">👁</button>
+          </div>
+        </div>
+        <div>
+          <label for="rc2">Repetir clave</label>
+          <div class="pw">
+            <input id="rc2" type="password" placeholder="Repita la clave">
+            <button type="button" class="eye" data-target="rc,rc2" title="Mostrar/ocultar claves">👁</button>
+          </div>
+        </div>
+      </div>
+      <div id="cmatch" class="match"></div>
+      <button class="btn btn-outline" type="submit">Registrarme</button>
+      <p id="amsg" class="msg-linea"></p>
+    </form>
+  </section>
+
+  <!-- ============ Aplicación ============ -->
+  <div id="app" class="hide">
+
+    <form id="nueva" class="card">
+      <h3 class="card-titulo">Agendar acarreo</h3>
+      <div class="nota">Lunes a domingo; los sábados se alternan (uno sí, uno no). Todas las horas disponibles, excepto 6–8am y 6–8pm (pico y placa).</div>
+      <label for="fecha">Fecha</label>
+      <input type="date" id="fecha">
+      <label>Hora de inicio</label>
+      <div id="horas" class="horas"></div>
+      <div class="alerta">🌙 <span><b>Aviso:</b> los acarreos en horario nocturno (8pm a 6am) tienen un <b>incremento en el valor</b> del servicio. Las horas nocturnas aparecen marcadas con 🌙.</span></div>
+      <div id="anoche" class="alerta alerta-fuerte hide"></div>
+      <label for="dur">Duración</label>
+      <select id="dur"></select>
+      <div class="row">
+        <div><label for="origen">Origen</label><input id="origen" placeholder="Dirección de origen"></div>
+        <div><label for="destino">Destino</label><input id="destino" placeholder="Dirección de destino"></div>
+      </div>
+      <label for="desc">Qué se va a transportar</label>
+      <textarea id="desc" placeholder="Describa la carga"></textarea>
+      <button class="btn btn-primary" type="submit">Solicitar acarreo</button>
+      <span id="nmsg" class="msg-linea"></span>
+    </form>
+
+    <form id="cfg" class="card hide">
+      <h3 class="card-titulo">Configuración (admin)</h3>
+      <label for="sref">Un sábado que SÍ se trabaja (los demás alternan)</label>
+      <input type="date" id="sref" class="input-corto">
+      <button class="btn btn-outline" type="submit">Guardar</button>
+      <span id="cmsg" class="msg-linea"></span>
+    </form>
+
+    <section class="card">
+      <h3 class="card-titulo" id="ttl">Citas</h3>
+      <div class="filtros">
+        <input id="buscar" type="search" placeholder="🔍 Buscar por nombre, teléfono, dirección, fecha…" autocomplete="off">
+        <select id="filtroEstado">
+          <option value="">Todos los estados</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="confirmada">Confirmadas</option>
+          <option value="completada">Completadas</option>
+          <option value="cancelada">Canceladas</option>
+          <option value="rechazada">Rechazadas</option>
+        </select>
+      </div>
+      <div class="filtros-info">
+        <span id="contador"></span>
+        <button id="btnBorrarFiltradas" class="btn-del hide" type="button">🗑 Borrar las citas mostradas</button>
+      </div>
+      <div class="tabla-wrap"><table id="tabla"></table></div>
+    </section>
+
+    <section id="mant" class="card card-peligro hide">
+      <h3 class="card-titulo">Borrar información (admin)</h3>
+      <div class="nota">Estas acciones no se pueden deshacer. Se pedirá confirmación antes de borrar.</div>
+      <div class="mant">
+        <button id="btnHistorial" class="btn btn-outline" type="button">Borrar historial (completadas, canceladas y rechazadas)</button>
+        <button id="btnTodas" class="btn btn-peligro" type="button">Borrar todas las citas</button>
+        <button id="btnClientes" class="btn btn-peligro" type="button">Borrar clientes y sus citas</button>
+      </div>
+      <p id="mmsg" class="msg-linea"></p>
+    </section>
+  </div>
+
+  <!-- ============ Galería ============ -->
+  <section class="card">
+    <h3 class="card-titulo">Nuestra camioneta</h3>
+    <div id="galeria" class="galeria"></div>
+    <form id="formFoto" class="subir hide">
+      <label for="archivo">Subir foto (JPG, PNG o WEBP · máx. 5 MB · hasta 6 fotos)</label>
+      <input type="file" id="archivo" accept="image/png,image/jpeg,image/webp">
+      <button class="btn btn-primary" type="submit">Subir foto</button>
+      <span id="fmsg" class="msg-linea"></span>
+      <div class="ayuda">La primera foto se muestra en la portada.</div>
+    </form>
+  </section>
+</main>
+
+<footer class="pie">© Trascar · Sistema de agendamiento</footer>
+
+<div id="lb" class="lightbox hide"><img id="lbi" alt="Foto ampliada"></div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>
+

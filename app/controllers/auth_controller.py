@@ -12,8 +12,27 @@ def login(p):
     return 200, {"token": token, "rol": u["rol"], "nombre": u["nombre"]}
 
 
+def logout(p):
+    token = str(p.cuerpo.get("token", ""))
+    sesion_model.eliminar(token)
+    return 200, {"ok": True}
+
+
 def listar_usuarios(p):
     return 200, usuario_model.listar_clientes()
+
+
+def cambiar_clave_usuario(p):
+    try:
+        uid = int(p.cuerpo.get("id"))
+    except (TypeError, ValueError):
+        raise ErrorHTTP(400, "ID de usuario inválido")
+    nueva = str(p.cuerpo.get("clave", ""))
+    if len(nueva) < 6:
+        raise ErrorHTTP(400, "La nueva clave debe tener mínimo 6 caracteres")
+    if not usuario_model.cambiar_clave(uid, nueva):
+        raise ErrorHTTP(404, "El usuario no existe")
+    return 200, {"ok": True}
 
 
 def eliminar_usuario(p):

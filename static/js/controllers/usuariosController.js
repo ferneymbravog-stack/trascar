@@ -1,6 +1,7 @@
 // CONTROLADOR · Gestión y visualización de usuarios registrados (solo admin).
 import { Api } from "../models/api.js";
 import { UsuariosView } from "../views/usuariosView.js";
+import { $ } from "../utils.js";
 
 let rolActual = "";
 let todos = [];
@@ -11,12 +12,11 @@ const normalizar = (s) => String(s ?? "").normalize("NFD").replace(/[\u0300-\u03
 function aplicarFiltro() {
   const palabras = normalizar(UsuariosView.filtro()).split(/\s+/).filter(Boolean);
   const mostrados = todos.filter((u) => {
-    const pajar = normalizar([u.nombre, u.usuario, u.telefono, u.rol].join(" "));
+    const pajar = normalizar([u.id, u.nombre, u.usuario, u.telefono, u.rol, u.creado].join(" "));
     return palabras.every((p) => pajar.includes(p));
   });
-  const totalClientes = todos.filter((u) => u.rol === "cliente").length;
   UsuariosView.render(mostrados);
-  UsuariosView.resumen(mostrados.length, totalClientes);
+  UsuariosView.resumen(mostrados.length, todos);
 }
 
 async function cargar() {
@@ -29,14 +29,33 @@ export const UsuariosController = {
   init({ onCambio }) {
     alCambiar = onCambio;
     UsuariosView.onBuscar(aplicarFiltro);
-    UsuariosView.onEliminar(async (id, nombre) => {
-      if (!confirm(`¿Eliminar al usuario "${nombre}" y todas sus citas?`)) return;
-      try {
-        await Api.eliminarUsuario(id);
-        await cargar();
-        alCambiar();
-      } catch (e) {
-        alert(e.message);
+    UsuariosView.onAccion(async (accion, id, nombre) => {
+      if (accion === "ver") {
+        $("buscar").value = nombre;
+        $("buscar").dispatchEvent(new Event("input"));
+        $("ttl").scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+      if (accion === "clave") {
+        const nueva = prompt(`Escriba la nueva clave para "${nombre}" (mínimo 6 caracteres):`);
+        if (!nueva) return;
+        try {
+          await Api.cambiarClaveUsuario(id, nueva);
+          alert(`Clave actualizada para ${nombre}.`);
+        } catch (e) {
+          alert(e.message);
+        }
+        return;
+      }
+      if (accion === "eliminar") {
+        if (!confirm(`¿Eliminar definitivamente a "${nombre}" y todas sus citas?`)) return;
+        try {
+          await Api.eliminarUsuario(id);
+          await cargar();
+          alCambiar();
+        } catch (e) {
+          alert(e.message);
+        }
       }
     });
   },
@@ -46,4 +65,3 @@ export const UsuariosController = {
   },
   cargar,
 };
-

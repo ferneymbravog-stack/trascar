@@ -88,6 +88,13 @@
   <!-- ============ Aplicación ============ -->
   <div id="app" class="hide">
 
+    <section id="resumenAdmin" class="stats-grid hide">
+      <div class="stat-card"><span class="stat-num" id="stClientes">0</span><small>Clientes registrados</small></div>
+      <div class="stat-card"><span class="stat-num" id="stTotalCitas">0</span><small>Acarreos totales</small></div>
+      <div class="stat-card stat-warn"><span class="stat-num" id="stPendientes">0</span><small>Pendientes por confirmar</small></div>
+      <div class="stat-card stat-ok"><span class="stat-num" id="stConfirmadas">0</span><small>Confirmados / Completados</small></div>
+    </section>
+
     <form id="nueva" class="card">
       <h3 class="card-titulo">Agendar acarreo</h3>
       <div class="nota">Lunes a domingo; los sábados se alternan (uno sí, uno no). Todas las horas disponibles, excepto 6–8am y 6–8pm (pico y placa).</div>

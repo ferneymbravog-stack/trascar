@@ -9,6 +9,7 @@ from .controllers import auth_controller, cita_controller, config_controller, fo
 RUTAS = {
     ("GET", "/api/ping"): (lambda p: (200, {"ok": True}), None),
     ("POST", "/api/login"): (auth_controller.login, None),
+    ("POST", "/api/logout"): (auth_controller.logout, None),
     ("POST", "/api/registro"): (auth_controller.registro, None),
     ("GET", "/api/fotos"): (foto_controller.listar, None),
     ("POST", "/api/fotos"): (foto_controller.subir, ("admin",)),
@@ -20,6 +21,7 @@ RUTAS = {
     ("POST", "/api/citas/eliminar"): (cita_controller.eliminar, ("admin",)),
     ("POST", "/api/citas/limpiar"): (cita_controller.limpiar, ("admin",)),
     ("GET", "/api/usuarios"): (auth_controller.listar_usuarios, ("admin",)),
+    ("POST", "/api/usuarios/clave"): (auth_controller.cambiar_clave_usuario, ("admin",)),
     ("POST", "/api/usuarios/eliminar"): (auth_controller.eliminar_usuario, ("admin",)),
     ("POST", "/api/clientes/borrar"): (auth_controller.borrar_clientes, ("admin",)),
     ("GET", "/api/config"): (config_controller.obtener, ("admin",)),

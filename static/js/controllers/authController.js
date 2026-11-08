@@ -27,9 +27,10 @@ export const AuthController = {
     });
   },
 
-  salir() {
+  async salir() {
+    const t = Sesion.token;
     Sesion.cerrar();
+    try { if (t) await Api.logout(t); } catch { /* ignorar */ }
     location.reload();
   },
 };
-

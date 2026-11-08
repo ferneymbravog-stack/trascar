@@ -12,11 +12,15 @@ def buscar(usuario):
 
 
 def listar_clientes():
-    """Devuelve todos los usuarios registrados (clientes, conductor y admin) con su conteo de citas."""
+    """Devuelve todos los usuarios registrados con toda su información y estadísticas de citas."""
     sql = """
     SELECT u.id, u.usuario, u.rol, u.nombre, u.telefono, COALESCE(u.creado, '') AS creado,
            COUNT(c.id) AS total_citas,
-           SUM(CASE WHEN c.estado IN ('pendiente','confirmada') THEN 1 ELSE 0 END) AS citas_activas
+           SUM(CASE WHEN c.estado = 'pendiente' THEN 1 ELSE 0 END) AS pendientes,
+           SUM(CASE WHEN c.estado = 'confirmada' THEN 1 ELSE 0 END) AS confirmadas,
+           SUM(CASE WHEN c.estado = 'completada' THEN 1 ELSE 0 END) AS completadas,
+           SUM(CASE WHEN c.estado IN ('cancelada','rechazada') THEN 1 ELSE 0 END) AS canceladas,
+           MAX(c.fecha) AS ultima_cita
     FROM usuarios u
     LEFT JOIN citas c ON c.cliente_id = u.id
     GROUP BY u.id
@@ -24,6 +28,13 @@ def listar_clientes():
     """
     with conexion() as c:
         return [dict(r) for r in c.execute(sql).fetchall()]
+
+
+def cambiar_clave(usuario_id, nueva_clave):
+    with conexion(escritura=True) as c:
+        n = c.execute("UPDATE usuarios SET clave=? WHERE id=?", (hash_pw(nueva_clave), usuario_id)).rowcount
+        c.execute("DELETE FROM sesiones WHERE usuario_id=?", (usuario_id,))
+        return n > 0
 
 
 def eliminar_usuario(usuario_id):

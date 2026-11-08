@@ -19,6 +19,7 @@ export const LayoutView = {
     $("quienRol").textContent = NOMBRES_ROL[rol] || rol;
     $("avatar").textContent = (nombre || "?").trim().charAt(0).toUpperCase();
     $("nueva").classList.toggle("hide", rol === "conductor");
+    $("resumenAdmin").classList.toggle("hide", rol !== "admin");
     $("cfg").classList.toggle("hide", rol !== "admin");
     $("secUsuarios").classList.toggle("hide", rol !== "admin");
     $("mant").classList.toggle("hide", rol !== "admin");

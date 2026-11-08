@@ -33,6 +33,7 @@ async function peticion(ruta, metodo = "GET", cuerpo) {
 
 export const Api = {
   login: (usuario, clave) => peticion("/api/login", "POST", { usuario, clave }),
+  logout: (token) => peticion("/api/logout", "POST", { token }),
   registro: (datos) => peticion("/api/registro", "POST", datos),
   fotos: () => peticion("/api/fotos"),
   subirFoto: (ext, data) => peticion("/api/fotos", "POST", { ext, data }),
@@ -45,6 +46,7 @@ export const Api = {
   eliminarCitas: (ids) => peticion("/api/citas/eliminar", "POST", { ids }),
   limpiarCitas: (alcance) => peticion("/api/citas/limpiar", "POST", { alcance }),
   usuarios: () => peticion("/api/usuarios"),
+  cambiarClaveUsuario: (id, clave) => peticion("/api/usuarios/clave", "POST", { id, clave }),
   eliminarUsuario: (id) => peticion("/api/usuarios/eliminar", "POST", { id }),
   borrarClientes: () => peticion("/api/clientes/borrar", "POST", {}),
   config: () => peticion("/api/config"),

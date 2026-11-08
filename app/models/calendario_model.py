@@ -10,7 +10,7 @@ def sabado_ref():
 
 
 def guardar_sabado_ref(f):
-    with conexion() as c:
+    with conexion(escritura=True) as c:
         c.execute("UPDATE config SET valor=? WHERE clave='sabado_ref'", (f.isoformat(),))
 
 
@@ -19,4 +19,3 @@ def dia_laboral(d):
     if d.weekday() != 5:
         return True
     return ((d - sabado_ref()).days // 7) % 2 == 0
-

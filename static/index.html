@@ -137,6 +137,17 @@
       <div class="tabla-wrap"><table id="tabla"></table></div>
     </section>
 
+    <section id="secUsuarios" class="card hide">
+      <h3 class="card-titulo">Usuarios registrados (admin)</h3>
+      <div class="filtros" style="grid-template-columns:1fr">
+        <input id="buscarUsuario" type="search" placeholder="🔍 Buscar usuario por nombre, @usuario o teléfono…" autocomplete="off">
+      </div>
+      <div class="filtros-info">
+        <span id="contadorUsuarios"></span>
+      </div>
+      <div class="tabla-wrap"><table id="tablaUsuarios"></table></div>
+    </section>
+
     <section id="mant" class="card card-peligro hide">
       <h3 class="card-titulo">Borrar información (admin)</h3>
       <div class="nota">Estas acciones no se pueden deshacer. Se pedirá confirmación antes de borrar.</div>

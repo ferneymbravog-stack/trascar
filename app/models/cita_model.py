@@ -28,7 +28,7 @@ def listar(rol, usuario_id):
 
 
 def crear(cliente_id, fecha, hora, duracion, origen, destino, descripcion, estado):
-    with conexion() as c:
+    with conexion(escritura=True) as c:
         c.execute("INSERT INTO citas(cliente_id,fecha,hora,duracion,origen,destino,descripcion,estado,creada) "
                   "VALUES(?,?,?,?,?,?,?,?,?)",
                   (cliente_id, fecha.isoformat(), hora, duracion, origen, destino, descripcion,
@@ -41,7 +41,7 @@ def obtener(cita_id):
 
 
 def cambiar_estado(cita_id, estado):
-    with conexion() as c:
+    with conexion(escritura=True) as c:
         c.execute("UPDATE citas SET estado=? WHERE id=?", (estado, cita_id))
 
 
@@ -52,17 +52,16 @@ def eliminar(cita_id):
 def eliminar_varias(ids):
     if not ids:
         return 0
-    with conexion() as c:
+    with conexion(escritura=True) as c:
         return c.execute(f"DELETE FROM citas WHERE id IN ({','.join('?' * len(ids))})", ids).rowcount
 
 
 def eliminar_historial():
     """Borra las citas ya finalizadas (completadas, canceladas y rechazadas)."""
-    with conexion() as c:
+    with conexion(escritura=True) as c:
         return c.execute("DELETE FROM citas WHERE estado IN ('completada','cancelada','rechazada')").rowcount
 
 
 def eliminar_todas():
-    with conexion() as c:
+    with conexion(escritura=True) as c:
         return c.execute("DELETE FROM citas").rowcount
-

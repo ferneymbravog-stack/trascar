@@ -9,7 +9,7 @@ Sesion = namedtuple("Sesion", "id rol nombre")
 
 def crear(usuario):
     token = secrets.token_hex(16)
-    with conexion() as c:
+    with conexion(escritura=True) as c:
         c.execute("INSERT OR REPLACE INTO sesiones(token,usuario_id,rol,nombre) VALUES(?,?,?,?)",
                   (token, usuario["id"], usuario["rol"], usuario["nombre"]))
     return token

@@ -12,6 +12,11 @@ HOST = os.environ.get("TRASCAR_HOST", "0.0.0.0")
 CLAVE_ADMIN = os.environ.get("TRASCAR_CLAVE_ADMIN", "admin123")
 CLAVE_CONDUCTOR = os.environ.get("TRASCAR_CLAVE_CONDUCTOR", "conductor123")
 
+# URL pública para mantener el servidor activo 24/7 y repositorio opcional para respaldo en la nube
+PUBLIC_URL = os.environ.get("RENDER_EXTERNAL_URL", "https://trascar.site")
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "ferneymbravog-stack/trascar")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+
 # Horas de servicio: las 24 horas, excepto 6-8am y 6-8pm (pico y placa).
 HORA_INICIO, HORA_FIN = 0, 24
 HORAS_BLOQUEADAS = list(range(6, 8)) + list(range(18, 20))

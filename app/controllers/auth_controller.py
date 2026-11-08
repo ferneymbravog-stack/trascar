@@ -1,4 +1,4 @@
-"""Controlador de autenticación: login y registro de clientes."""
+"""Controlador de autenticación y gestión de usuarios."""
 from ..errors import ErrorHTTP
 from ..models import sesion_model, usuario_model
 from ..seguridad import check_pw
@@ -10,6 +10,23 @@ def login(p):
         raise ErrorHTTP(401, "Usuario o clave incorrectos")
     token = sesion_model.crear(u)
     return 200, {"token": token, "rol": u["rol"], "nombre": u["nombre"]}
+
+
+def listar_usuarios(p):
+    return 200, usuario_model.listar_clientes()
+
+
+def eliminar_usuario(p):
+    try:
+        uid = int(p.cuerpo.get("id"))
+    except (TypeError, ValueError):
+        raise ErrorHTTP(400, "ID de usuario inválido")
+    res = usuario_model.eliminar_usuario(uid)
+    if res == "no_existe":
+        raise ErrorHTTP(404, "El usuario no existe")
+    if res == "protegido":
+        raise ErrorHTTP(400, "No se puede eliminar al administrador ni al conductor")
+    return 200, {"ok": True}
 
 
 def borrar_clientes(p):
@@ -27,4 +44,3 @@ def registro(p):
     if not usuario_model.crear_cliente(usuario, nombre, telefono, clave):
         raise ErrorHTTP(400, "Ese usuario ya existe")
     return 200, {"ok": True}
-

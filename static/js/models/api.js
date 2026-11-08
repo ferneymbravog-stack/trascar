@@ -1,4 +1,4 @@
-// MODELO · Cliente de la API del servidor.
+// MODELO · Cliente de la API del servidor (sin caché para datos en tiempo real).
 import { Sesion } from "./sesion.js";
 
 export class ApiError extends Error {
@@ -11,13 +11,17 @@ export class ApiError extends Error {
 async function peticion(ruta, metodo = "GET", cuerpo) {
   const r = await fetch(ruta, {
     method: metodo,
-    headers: { Authorization: Sesion.token, "Content-Type": "application/json" },
+    cache: "no-store",
+    headers: {
+      Authorization: Sesion.token,
+      "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+    },
     body: cuerpo ? JSON.stringify(cuerpo) : undefined,
   });
   let datos = {};
   try { datos = await r.json(); } catch { /* respuesta sin cuerpo */ }
   if (!r.ok) {
-    // Sesión vencida (por ejemplo, el servidor se reinició): volver al ingreso.
     if (r.status === 401 && Sesion.activa()) {
       Sesion.cerrar();
       location.reload();
@@ -40,8 +44,9 @@ export const Api = {
   eliminarCita: (id) => peticion("/api/citas/eliminar", "POST", { id }),
   eliminarCitas: (ids) => peticion("/api/citas/eliminar", "POST", { ids }),
   limpiarCitas: (alcance) => peticion("/api/citas/limpiar", "POST", { alcance }),
+  usuarios: () => peticion("/api/usuarios"),
+  eliminarUsuario: (id) => peticion("/api/usuarios/eliminar", "POST", { id }),
   borrarClientes: () => peticion("/api/clientes/borrar", "POST", {}),
   config: () => peticion("/api/config"),
   guardarConfig: (sabado_ref) => peticion("/api/config", "POST", { sabado_ref }),
 };
-

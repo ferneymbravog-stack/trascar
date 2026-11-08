@@ -1,6 +1,9 @@
-"""Servidor HTTP: sirve la vista estática y despacha la API hacia los controladores."""
+"""Servidor HTTP: sirve la vista estática, despacha la API y mantiene vivo el servicio 24/7."""
 import json
 import os
+import threading
+import time
+import urllib.request
 from collections import namedtuple
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs
@@ -23,7 +26,9 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", tipo)
         self.send_header("Content-Length", str(len(cuerpo)))
         if not cache:
-            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
         self.end_headers()
         self.wfile.write(cuerpo)
 
@@ -87,7 +92,19 @@ class Handler(BaseHTTPRequestHandler):
         self._json(codigo, datos)
 
 
+def _keep_alive_24_7():
+    """Hace ping periódico a la URL pública para evitar que el servidor entre en reposo."""
+    url = config.PUBLIC_URL.rstrip("/") + "/api/ping"
+    while True:
+        time.sleep(480)  # cada 8 minutos
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Trascar-KeepAlive"})
+            urllib.request.urlopen(req, timeout=10).close()
+        except Exception:
+            pass
+
+
 def ejecutar():
+    threading.Thread(target=_keep_alive_24_7, daemon=True).start()
     print(f"Agenda Trascar en http://localhost:{config.PORT}")
     ThreadingHTTPServer((config.HOST, config.PORT), Handler).serve_forever()
-
